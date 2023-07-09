@@ -1,35 +1,14 @@
-from oauthlib.oauth2 import BackendApplicationClient
-from requests_oauthlib import OAuth2Session
-from utils import COPERNICUS_ID, COPERNICUS_SECRET
-import json
+
+from utils import es_rgb, es_veg
+from copernicus import CopernicusAPI
 import numpy as np
 import cv2
 
-# Create a session
-client = BackendApplicationClient(client_id=COPERNICUS_ID)
-oauth = OAuth2Session(client=client)
+def image_info(image):
+    print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
+    print(f"Num uniques {len(np.unique(image))}")
 
-# Get token for the session
-token = oauth.fetch_token(token_url='https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token',
-                          client_secret=COPERNICUS_SECRET)
-
-
-evalscript = """
-//VERSION=3
-function setup() {
-  return {
-    input: ["B02", "B03", "B04"],
-    output: {
-      bands: 3,
-      sampleType: "AUTO", // default value - scales the output values from [0,1] to [0,255].
-    },
-  }
-}
-
-function evaluatePixel(sample) {
-  return [2.5*sample.B04, 2.5*sample.B03, 2.5*sample.B02]
-}
-"""
+api = CopernicusAPI()
 
 request = {
     "input": {
@@ -47,33 +26,33 @@ request = {
                 "type": "sentinel-2-l2a",
                 "dataFilter": {
                     "timeRange": {
-                        "from": "2020-06-12T00:00:00Z",
-                        "to": "2020-07-13T00:00:00Z",
+                        "from": "2023-06-10T00:00:00Z",
+                        "to": "2023-07-10T00:00:00Z",
                     }
                 },
             }
         ],
     },
     "output": {
-        "width": 512,
-        "height": 512,
+        "width": 2000,
+        "height": 2000,
     },
-    "evalscript": evalscript,
+    "evalscript": es_rgb,
 }
 
-url = "https://sh.dataspace.copernicus.eu/api/v1/process"
-resp = oauth.post(url, json=request)
 
-print(f"{resp.status_code}: {resp.reason}")
-print(f"Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
+resp = api.request(request)
+np_array = np.frombuffer(resp.content, np.uint8)
+image = cv2.imdecode(np_array, cv2.IMREAD_UNCHANGED)
+image_info(image)
 
-with open("my_file.png", "wb") as f:
-    f.write(resp.content)
 
-image = cv2.imread("my_file.png")
-
-print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
-print(f"{np.unique(image)}")
+request["evalscript"] = es_veg
+resp = api.request(request)
+np_array = np.frombuffer(resp.content, np.uint8)
+veg_image = cv2.imdecode(np_array, cv2.IMREAD_UNCHANGED)
+image_info(veg_image)
 
 cv2.imshow("ok", image)
+cv2.imshow("ok2", veg_image)
 cv2.waitKey(-1)
