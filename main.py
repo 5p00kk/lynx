@@ -10,12 +10,13 @@ def image_info(image):
 
 api = CopernicusAPI()
 
-
 # Prepare request
-coords = [13.322174072265625, 45.85080395917834, 14.05963134765625, 46.29191774991382]
+pt = (16.931992, 52.409538)
+box_size = (0.73, 0.44)
+coords = [pt[0]-box_size[0]/2, pt[1]-box_size[1]/2, pt[0]+box_size[0]/2, pt[1]+box_size[1]/2]
+
 time = ("2023-06-10T00:00:00Z", "2023-07-10T00:00:00Z")
 requests = [gen_request(coords, time, es_rgb), gen_request(coords, time, es_veg)]
-
 
 for i, request in enumerate(requests):
     resp = api.request(request)
