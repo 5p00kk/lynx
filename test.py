@@ -13,62 +13,50 @@ oauth = OAuth2Session(client=client)
 token = oauth.fetch_token(token_url='https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token',
                           client_secret=COPERNICUS_SECRET)
 
+
 evalscript = """
 //VERSION=3
 function setup() {
   return {
-    input: ["VH"],
-    output: { id: "default", bands: 1 },
+    input: ["B02", "B03", "B04"],
+    output: {
+      bands: 3,
+      sampleType: "AUTO", // default value - scales the output values from [0,1] to [0,255].
+    },
   }
 }
 
-function evaluatePixel(samples) {
-  return [toDb(samples.VH)]
-}
-
-// visualizes decibels from -20 to 0
-
-function toDb(linear) {
-  // the following commented out lines are simplified below
-  // var log = 10 * Math.log(linear) / Math.LN10
-  // var val = Math.max(0, (log + 20) / 20)
-  return Math.max(0, Math.log(linear) * 0.21714724095 + 1)
+function evaluatePixel(sample) {
+  return [2.5*sample.B04, 2.5*sample.B03, 2.5*sample.B02]
 }
 """
 
 request = {
     "input": {
         "bounds": {
+            "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
             "bbox": [
-                1360000,
-                5121900,
-                1370000,
-                5131900,
+                13.322174072265625,
+                45.85080395917834,
+                14.05963134765625,
+                46.29191774991382,
             ],
-            "properties": {"crs": "http://www.opengis.net/def/crs/EPSG/0/3857"},
         },
         "data": [
             {
-                "type": "sentinel-1-grd",
+                "type": "sentinel-2-l2a",
                 "dataFilter": {
                     "timeRange": {
-                        "from": "2019-02-02T00:00:00Z",
-                        "to": "2019-04-02T23:59:59Z",
+                        "from": "2020-06-12T00:00:00Z",
+                        "to": "2020-07-13T00:00:00Z",
                     }
                 },
-                "processing": {"orthorectify": "true"},
             }
         ],
     },
     "output": {
         "width": 512,
         "height": 512,
-        "responses": [
-            {
-                "identifier": "default",
-                "format": {"type": "image/png"},
-            }
-        ],
     },
     "evalscript": evalscript,
 }
@@ -77,15 +65,15 @@ url = "https://sh.dataspace.copernicus.eu/api/v1/process"
 resp = oauth.post(url, json=request)
 
 print(f"{resp.status_code}: {resp.reason}")
-
+print(f"Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
 
 with open("my_file.png", "wb") as f:
     f.write(resp.content)
 
 image = cv2.imread("my_file.png")
+
+print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
+print(f"{np.unique(image)}")
+
 cv2.imshow("ok", image)
 cv2.waitKey(-1)
-
-#with open('output_file.json', 'w') as f:
-#    json.dump(data_js, f, indent=4)
-
