@@ -37,3 +37,24 @@ function evaluatePixel(sample) {
   return [sample.B05, sample.B06, sample.B07]
 }
 """
+
+def gen_request(coords, time, es):
+    request = {
+        "input": {
+            "bounds": {
+                "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
+                "bbox": coords,
+            },
+            "data": [
+                {
+                    "type": "sentinel-2-l2a",
+                    "dataFilter": {
+                        "timeRange": {"from": time[0], "to": time[1]},
+                    },
+                }
+            ],
+        },
+        "output": {"width": 512, "height": 512,},
+        "evalscript": es,
+    }
+    return request
