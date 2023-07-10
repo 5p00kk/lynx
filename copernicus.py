@@ -16,11 +16,12 @@ class CopernicusAPI:
         self.token = self.oauth.fetch_token(token_url="https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token",
                                             client_secret=COPERNICUS_SECRET)
 
-    def request(self, request):
+    def request(self, request, verbose=False):
         req_url = "https://sh.dataspace.copernicus.eu/api/v1/process"
         resp = self.oauth.post(req_url, json=request)
-        print(f"{resp.status_code}: {resp.reason}")
-        print(f"Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
+        if verbose:
+            print(f"{resp.status_code}: {resp.reason}")
+            print(f"Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
         return resp
 
 
