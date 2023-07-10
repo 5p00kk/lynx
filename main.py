@@ -1,24 +1,24 @@
 
-from utils import es_rgb, es_veg, es_rgb_cl, gen_request
+from utils import es_rgb, es_veg, es_rgb_cl, image_info, gen_request
 from copernicus import CopernicusAPI
 import numpy as np
 import cv2
-import math
-from utils import latd_to_km, km_to_latd, lond_to_km, km_to_lond
+from utils import BoxCalc
 
-def image_info(image):
-    print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
-    print(f"Num uniques {len(np.unique(image))}")
+RESOLUTION_KM = 0.01 # 10m
+OUTPUT_SIZE_PX = 512 # px
+CENTER = (16.931992, 52.409538) # lon, lat poznan
 
 api = CopernicusAPI()
+box_cal = BoxCalc(OUTPUT_SIZE_PX, RESOLUTION_KM)
+print(box_cal)
 
-# Prepare request
-pt = (16.931992, 52.409538)
-box_size = (0.73, 0.44)
-coords = [pt[0]-box_size[0]/2, pt[1]-box_size[1]/2, pt[0]+box_size[0]/2, pt[1]+box_size[1]/2]
+# Calculate box coordinates (WGS84)
+box_coords = box_cal.get_box(CENTER)
 
+# Prepare requests
 time = ("2023-06-10T00:00:00Z", "2023-07-10T00:00:00Z")
-requests = [gen_request(coords, time, es_rgb), gen_request(coords, time, es_veg)]
+requests = [gen_request(box_coords, time, es_rgb), gen_request(box_coords, time, es_veg)]
 
 for i, request in enumerate(requests):
     resp = api.request(request)
