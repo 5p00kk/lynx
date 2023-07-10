@@ -4,6 +4,8 @@ import numpy as np
 EARTH_CIRC = 40075
 
 def image_info(image):
+    if type(image) != np.array:
+      image = np.array(image)
     print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
     print(f"Num uniques {len(np.unique(image))}")
 
