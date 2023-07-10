@@ -20,8 +20,10 @@ class CopernicusAPI:
         req_url = "https://sh.dataspace.copernicus.eu/api/v1/process"
         resp = self.oauth.post(req_url, json=request)
         if verbose:
-            print(f"{resp.status_code}: {resp.reason}")
-            print(f"Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
+            if resp.status_code == 200:
+                print(f"OK Returned data is of type = {type(resp.content)} and length {len(resp.content)}.")
+            else:
+                print(f"ERROR {resp.status_code}: {resp.reason}")
         return resp
 
 
