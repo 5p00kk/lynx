@@ -41,6 +41,28 @@ function evaluatePixel(sample) {
 }
 """
 
+es_rgb_cl = """
+//VERSION=3
+function setup() {
+  return {
+    input: ["B02", "B03", "B04", "SCL"],
+    output: {
+      bands: 3,
+      sampleType: "AUTO", // default value - scales the output values from [0,1] to [0,255].
+    },
+  }
+}
+
+function evaluatePixel(sample) {
+  if ([8, 9, 10].includes(sample.SCL)) {
+    return [1, 0, 0]
+  } else {
+    return [2.5 * sample.B04, 2.5 * sample.B03, 2.5 * sample.B02]
+  }
+}
+"""
+
+
 def gen_request(coords, time, es):
     request = {
         "input": {
