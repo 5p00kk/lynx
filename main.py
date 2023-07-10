@@ -1,5 +1,6 @@
 
-from utils import es_rgb, es_veg, es_rgb_cl, image_info, gen_request
+from utils import image_info
+from eval_scripts import es_rgb, es_veg, es_rgb_cl
 from copernicus import CopernicusAPI, CopernicusReq
 import numpy as np
 import cv2
