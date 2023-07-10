@@ -1,11 +1,11 @@
 
+import os
+import cv2
+import numpy as np
 from utils import image_info
+from utils import BoxCalc
 from eval_scripts import es_rgb, es_veg, es_rgb_cl
 from copernicus import CopernicusAPI, CopernicusReq
-import numpy as np
-import cv2
-from utils import BoxCalc
-import os
 
 RESOLUTION_KM = 0.01 # 10m
 OUTPUT_SIZE_PX = 512 # px
