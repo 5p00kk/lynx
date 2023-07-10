@@ -64,7 +64,7 @@ function evaluatePixel(sample) {
 """
 
 
-def gen_request(coords, time, es):
+def gen_request(coords, time, size, es):
     request = {
         "input": {
             "bounds": {
@@ -81,7 +81,7 @@ def gen_request(coords, time, es):
                 }
             ],
         },
-        "output": {"width": 512, "height": 512,},
+        "output": {"width": size, "height": size,},
         "evalscript": es,
     }
     return request

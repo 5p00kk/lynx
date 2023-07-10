@@ -18,7 +18,7 @@ box_coords = box_cal.get_box(CENTER)
 
 # Prepare requests
 time = ("2023-06-10T00:00:00Z", "2023-07-10T00:00:00Z")
-requests = [gen_request(box_coords, time, es_rgb), gen_request(box_coords, time, es_veg)]
+requests = [gen_request(box_coords, time, OUTPUT_SIZE_PX, es_rgb), gen_request(box_coords, time, OUTPUT_SIZE_PX, es_veg)]
 
 for i, request in enumerate(requests):
     resp = api.request(request)
