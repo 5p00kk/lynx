@@ -1,8 +1,11 @@
 import os
+import math
 
 # Copernicus credentials
 COPERNICUS_ID = os.environ.get('COPERNICUS_ID')
 COPERNICUS_SECRET = os.environ.get('COPERNICUS_SECRET')
+
+EARTH_CIRC = 40075
 
 es_rgb = """
 //VERSION=3
@@ -58,3 +61,19 @@ def gen_request(coords, time, es):
         "evalscript": es,
     }
     return request
+
+def latd_to_km(lat_d):
+    km = lat_d*(EARTH_CIRC/360)
+    return km
+
+def km_to_latd(km):
+    lat_d = km*(360/EARTH_CIRC)
+    return lat_d
+
+def lond_to_km(lon_d, lat):
+    km = math.cos(math.radians(lat))*lon_d*(EARTH_CIRC/360)
+    return km
+
+def km_to_lond(km, lat):
+    lon_d = (1/math.cos(math.radians(lat)))*(360/EARTH_CIRC)*km
+    return lon_d
