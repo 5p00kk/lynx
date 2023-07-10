@@ -1,7 +1,7 @@
 
 import os
-import cv2
-import numpy as np
+from PIL import Image 
+from io import BytesIO
 from utils import image_info
 from utils import BoxCalc
 from eval_scripts import es_rgb, es_veg, es_rgb_cl
@@ -34,10 +34,7 @@ for i, request in enumerate(requests):
     # Get
     resp = api.request(request.get_request())
     # Decode
-    np_array = np.frombuffer(resp.content, np.uint8)
-    image = cv2.imdecode(np_array, cv2.IMREAD_UNCHANGED)
+    image = Image.open(BytesIO(resp.content))
     # Save
     filename = f"{request.years[0]}_{request.months[0]}.png"
-    cv2.imwrite(os.path.join("imgs", filename), image)
-
-cv2.waitKey(-1)
+    image.save(os.path.join("imgs", filename))
