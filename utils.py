@@ -64,28 +64,6 @@ function evaluatePixel(sample) {
 """
 
 
-def gen_request(coords, time, size, es):
-    request = {
-        "input": {
-            "bounds": {
-                "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
-                "bbox": coords,
-            },
-            "data": [
-                {
-                    "type": "sentinel-2-l2a",
-                    "dataFilter": {
-                        "timeRange": {"from": time[0], "to": time[1]},
-                        #"mosaickingOrder": "leastCC",
-                    },
-                }
-            ],
-        },
-        "output": {"width": size, "height": size,},
-        "evalscript": es,
-    }
-    return request
-
 def image_info(image):
     print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
     print(f"Num uniques {len(np.unique(image))}")

@@ -1,6 +1,6 @@
 
 from utils import es_rgb, es_veg, es_rgb_cl, image_info, gen_request
-from copernicus import CopernicusAPI
+from copernicus import CopernicusAPI, CopernicusReq
 import numpy as np
 import cv2
 from utils import BoxCalc
@@ -17,14 +17,24 @@ print(box_cal)
 box_coords = box_cal.get_box(CENTER)
 
 # Prepare requests
-time = ("2023-06-10T00:00:00Z", "2023-07-10T00:00:00Z")
-requests = [gen_request(box_coords, time, OUTPUT_SIZE_PX, es_rgb), gen_request(box_coords, time, OUTPUT_SIZE_PX, es_veg)]
+years = [year for year in range(2020,2024)]
+months = [month for month in range(1,13)]
+requests = []
+for year in years:
+    for month in months:
+        from_d = f"{year}-{month:02d}-01T00:00:00Z"
+        to_d = f"{year}-{month:02d}-28T00:00:00Z"
+        time = (from_d, to_d)
+        request = CopernicusReq(box_coords, time, OUTPUT_SIZE_PX, es_rgb)
+        requests.append(request)
 
 for i, request in enumerate(requests):
-    resp = api.request(request)
+    # Get
+    resp = api.request(request.get_request())
+    # Decode
     np_array = np.frombuffer(resp.content, np.uint8)
     image = cv2.imdecode(np_array, cv2.IMREAD_UNCHANGED)
-    image_info(image)
-    cv2.imshow(f"req {i}", image)
-    cv2.waitKey(5)
+    # Save
+    cv2.imwrite(f"{request.years[0]}_{request.months[0]}.png", image)
+
 cv2.waitKey(-1)
