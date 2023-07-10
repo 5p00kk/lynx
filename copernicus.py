@@ -1,6 +1,10 @@
+import os
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
-from utils import COPERNICUS_ID, COPERNICUS_SECRET
+
+# Copernicus credentials
+COPERNICUS_ID = os.environ.get('COPERNICUS_ID')
+COPERNICUS_SECRET = os.environ.get('COPERNICUS_SECRET')
 
 class CopernicusAPI:
     def __init__(self) -> None:
