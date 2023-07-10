@@ -1,8 +1,10 @@
 
-from utils import es_rgb, es_veg, gen_request
+from utils import es_rgb, es_veg, es_rgb_cl, gen_request
 from copernicus import CopernicusAPI
 import numpy as np
 import cv2
+import math
+from utils import latd_to_km, km_to_latd, lond_to_km, km_to_lond
 
 def image_info(image):
     print(f"Loaded image is {image.shape}, {image.dtype}, {image.shape[0]*image.shape[1]*image.shape[2]*image.itemsize}")
