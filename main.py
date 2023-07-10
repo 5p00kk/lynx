@@ -32,7 +32,8 @@ for year in years:
 
 for i, request in enumerate(requests):
     # Get
-    resp = api.request(request.get_request())
+    print(f"Getting {request.months[0]}.{request.years[0]}")
+    resp = api.request(request.get_request(), True)
     # Decode
     image = Image.open(BytesIO(resp.content))
     # Save
