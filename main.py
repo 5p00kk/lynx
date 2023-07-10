@@ -5,6 +5,7 @@ from copernicus import CopernicusAPI, CopernicusReq
 import numpy as np
 import cv2
 from utils import BoxCalc
+import os
 
 RESOLUTION_KM = 0.01 # 10m
 OUTPUT_SIZE_PX = 512 # px
@@ -36,6 +37,7 @@ for i, request in enumerate(requests):
     np_array = np.frombuffer(resp.content, np.uint8)
     image = cv2.imdecode(np_array, cv2.IMREAD_UNCHANGED)
     # Save
-    cv2.imwrite(f"{request.years[0]}_{request.months[0]}.png", image)
+    filename = f"{request.years[0]}_{request.months[0]}.png"
+    cv2.imwrite(os.path.join("imgs", filename), image)
 
 cv2.waitKey(-1)
