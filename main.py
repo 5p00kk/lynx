@@ -27,8 +27,10 @@ for year in years:
         from_d = f"{year}-{month:02d}-01T00:00:00Z"
         to_d = f"{year}-{month:02d}-28T00:00:00Z"
         time = (from_d, to_d)
-        request = CopernicusReq(box_coords, time, OUTPUT_SIZE_PX, es_rgb)
-        requests.append(request)
+        request_c = CopernicusReq(box_coords, time, OUTPUT_SIZE_PX, es_rgb, "rgb")
+        request_v = CopernicusReq(box_coords, time, OUTPUT_SIZE_PX, es_veg, "veg")
+        requests.append(request_c)
+        requests.append(request_v)
 
 for i, request in enumerate(requests):
     # Get
@@ -37,5 +39,5 @@ for i, request in enumerate(requests):
     # Decode
     image = Image.open(BytesIO(resp.content))
     # Save
-    filename = f"{request.years[0]}_{request.months[0]}.png"
+    filename = f"{request.years[0]}_{request.months[0]}_{request.name[0]}.png"
     image.save(os.path.join("imgs", filename))

@@ -28,11 +28,12 @@ class CopernicusAPI:
 
 
 class CopernicusReq():
-    def __init__(self, coords, dates, output_size, es) -> None:
+    def __init__(self, coords, dates, output_size, es, name) -> None:
         self.dates = dates
         self.coords = coords
         self.output_size = output_size
         self.es = es
+        self.name = name
     
     def get_request(self):
         return CopernicusReq.gen_request(self.coords, self.dates, self.output_size, self.es)
